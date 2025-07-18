@@ -2,13 +2,13 @@ from dotenv import load_dotenv
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableParallel, RunnableLambda
-from langchain_openai import ChatOpenAI
+from langchain_ollama.llms import OllamaLLM
 
 # Load environment variables from .env
 load_dotenv()
 
 # Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
+model = OllamaLLM(model="llama3.1")
 
 # Define prompt template
 prompt_template = ChatPromptTemplate.from_messages(
@@ -62,11 +62,24 @@ cons_branch_chain = (
 )
 
 # Create the combined chain using LangChain Expression Language (LCEL)
-chain = (
+# chain = (
+#     prompt_template
+#     | model
+#     | StrOutputParser()
+#     | RunnableParallel(branches={"pros": pros_branch_chain, "cons": cons_branch_chain})
+#     | RunnableLambda(lambda x: combine_pros_cons(x["branches"]["pros"], x["branches"]["cons"]))
+# )
+
+chain= ( # this is created by me and it's easer to read
     prompt_template
     | model
     | StrOutputParser()
-    | RunnableParallel(branches={"pros": pros_branch_chain, "cons": cons_branch_chain})
+    | RunnableParallel(
+    branches={
+        "pros": RunnableLambda(lambda y: analyze_pros(y)) | model | StrOutputParser(),
+        "cons": RunnableLambda(lambda y: analyze_cons(y)) | model | StrOutputParser()
+    }
+)
     | RunnableLambda(lambda x: combine_pros_cons(x["branches"]["pros"], x["branches"]["cons"]))
 )
 

@@ -36,7 +36,7 @@ from langchain_core.messages import HumanMessage
 # # This does work:
 # messages = [
 #     ("system", "You are a comedian who tells jokes about {topic}."),
-#     HumanMessage(content="Tell me 3 jokes."),
+#     HumanMessage(content="Tell me 3 jokes."),# Here we don't use variable for prompt template so we can use this format
 # ]
 # prompt_template = ChatPromptTemplate.from_messages(messages)
 # prompt = prompt_template.invoke({"topic": "lawyers"})
@@ -47,7 +47,7 @@ from langchain_core.messages import HumanMessage
 # This does NOT work:
 messages = [
     ("system", "You are a comedian who tells jokes about {topic}."),
-    HumanMessage(content="Tell me {joke_count} jokes."),
+    HumanMessage(content="Tell me {joke_count} jokes."),# if you are using prompt template you should always use tuple
 ]
 prompt_template = ChatPromptTemplate.from_messages(messages)
 prompt = prompt_template.invoke({"topic": "lawyers", "joke_count": 3})

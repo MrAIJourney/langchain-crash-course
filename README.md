@@ -17,7 +17,11 @@ Welcome to the LangChain Crash Course repository! This repo contains all the cod
 
 - Python 3.10 or 3.11
 - Poetry (Follow this [Poetry installation tutorial](https://python-poetry.org/docs/#installation) to install Poetry on your system)
-
+    ```bash
+    python3 -m venv $VENV_PATH
+    $VENV_PATH/bin/pip install -U pip setuptools
+    $VENV_PATH/bin/pip install poetry
+    ```
 ### Installation
 
 1. Clone the repository:

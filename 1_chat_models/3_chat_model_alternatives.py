@@ -8,7 +8,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 load_dotenv()
 
 messages = [
-    SystemMessage(content="Solve the following math problems"),
+    SystemMessage(content="Solve the following math problems, Explain response for 7 year old child."),
     HumanMessage(content="What is 81 divided by 9?"),
 ]
 

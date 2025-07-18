@@ -2,11 +2,12 @@ import os
 
 from dotenv import load_dotenv
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain # this is used to combine retrieved documents for answering questions
 from langchain_community.vectorstores import Chroma
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
+from langchain_ollama.llms import OllamaLLM
 
 # Load environment variables from .env
 load_dotenv()
@@ -16,7 +17,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 persistent_directory = os.path.join(current_dir, "db", "chroma_db_with_metadata")
 
 # Define the embedding model
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 # Load the existing vector store with the embedding function
 db = Chroma(persist_directory=persistent_directory, embedding_function=embeddings)
@@ -30,7 +31,7 @@ retriever = db.as_retriever(
 )
 
 # Create a ChatOpenAI model
-llm = ChatOpenAI(model="gpt-4o")
+llm = OllamaLLM(model= "llama3.1")
 
 # Contextualize question prompt
 # This system prompt helps the AI understand that it should reformulate the question
@@ -44,7 +45,7 @@ contextualize_q_system_prompt = (
 )
 
 # Create a prompt template for contextualizing questions
-contextualize_q_prompt = ChatPromptTemplate.from_messages(
+contextualize_q_prompt = ChatPromptTemplate.from_messages( # this is used to reformulate the question based on chat history
     [
         ("system", contextualize_q_system_prompt),
         MessagesPlaceholder("chat_history"),
@@ -72,7 +73,7 @@ qa_system_prompt = (
 )
 
 # Create a prompt template for answering questions
-qa_prompt = ChatPromptTemplate.from_messages(
+qa_prompt = ChatPromptTemplate.from_messages( # this is used to answer the question based on retrieved context
     [
         ("system", qa_system_prompt),
         MessagesPlaceholder("chat_history"),
@@ -93,7 +94,7 @@ def continual_chat():
     print("Start chatting with the AI! Type 'exit' to end the conversation.")
     chat_history = []  # Collect chat history here (a sequence of messages)
     while True:
-        query = input("You: ")
+        query = input("You (exit for quit): ")
         if query.lower() == "exit":
             break
         # Process the user's query through the retrieval chain

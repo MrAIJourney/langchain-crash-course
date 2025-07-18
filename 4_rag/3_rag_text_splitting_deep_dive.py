@@ -9,7 +9,7 @@ from langchain.text_splitter import (
 )
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 
 # Define the directory containing the text file
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,12 +23,12 @@ if not os.path.exists(file_path):
     )
 
 # Read the text content from the file
-loader = TextLoader(file_path)
+loader = TextLoader(file_path, encoding="utf8")
 documents = loader.load()
 
 # Define the embedding model
-embeddings = OpenAIEmbeddings(
-    model="text-embedding-3-small"
+embeddings = OllamaEmbeddings(
+    model="mxbai-embed-large"
 )  # Update to a valid embedding model if needed
 
 
@@ -70,7 +70,7 @@ token_splitter = TokenTextSplitter(chunk_overlap=0, chunk_size=512)
 token_docs = token_splitter.split_documents(documents)
 create_vector_store(token_docs, "chroma_db_token")
 
-# 4. Recursive Character-based Splitting
+# 4. Recursive Character-based Splitting ***** BEST ONE ****
 # Attempts to split text at natural boundaries (sentences, paragraphs) within character limit.
 # Balances between maintaining coherence and adhering to character limits.
 print("\n--- Using Recursive Character-based Splitting ---")

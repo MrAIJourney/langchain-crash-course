@@ -3,7 +3,8 @@ import os
 from dotenv import load_dotenv
 from langchain_community.vectorstores import Chroma
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
+from langchain_ollama.llms import OllamaLLM
 
 # Load environment variables from .env
 load_dotenv()
@@ -14,7 +15,7 @@ persistent_directory = os.path.join(
     current_dir, "db", "chroma_db_with_metadata")
 
 # Define the embedding model
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 # Load the existing vector store with the embedding function
 db = Chroma(persist_directory=persistent_directory,
@@ -45,7 +46,7 @@ combined_input = (
 )
 
 # Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
+model = OllamaLLM(model="llama3.1")
 
 # Define the messages for the model
 messages = [
@@ -58,7 +59,7 @@ result = model.invoke(messages)
 
 # Display the full result and content only
 print("\n--- Generated Response ---")
-# print("Full result:")
-# print(result)
-print("Content only:")
-print(result.content)
+print("Full result:")
+print(result)
+# print("Content only:")
+# print(result.content) # For model except llama
